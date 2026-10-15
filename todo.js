@@ -137,4 +137,70 @@ function renderNotes() {
         meta.append(categoryLabel, dateLabel);
         card.append(title, description, meta);
     });
+        // Create the action buttons
+        const actions = document.createElement("div");
+        actions.className = "note-actions";
 
+        if (currentPage === "Trash") {
+            actions.append(
+                createActionButton("Restore", function() {
+                    note.trashed = false;
+                    renderNotes();
+                }),
+                createActionButton("Delete permanently", function() {
+                    const confirmed = confirm(
+                        "Permanently delete this note?"
+                    );
+
+                    if (confirmed) {
+                        const index = notes.findIndex(
+                            item => item.id === note.id
+                        );
+
+                        notes.splice(index, 1);
+                        renderNotes();
+                    }
+                })
+            );
+        } else if (currentPage === "Archived") {
+            actions.append(
+                createActionButton("Unarchive", function() {
+                    note.archived = false;
+                    renderNotes();
+                }),
+                createActionButton("Move to trash", function() {
+                    note.trashed = true;
+                    renderNotes();
+                })
+            );
+        } else {
+            actions.append(
+                createActionButton("Edit", function() {
+                    openEditDialog(note);
+                }),
+                createActionButton("Archive", function() {
+                    note.archived = true;
+                    renderNotes();
+                }),
+                createActionButton("Delete", function() {
+                    note.trashed = true;
+                    renderNotes();
+                })
+            );
+        }
+
+        card.appendChild(actions);
+        notesGrid.appendChild(card);
+
+    emptyMessage.hidden = filteredNotes.length !== 0;
+
+
+// Helper function to create buttons
+function createActionButton(label, action) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", action);
+
+    return button;
+}

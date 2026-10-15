@@ -104,3 +104,275 @@ button {
     display: flex;
     min-height: calc(100vh - 80px);
 }
+.sidebar {
+    width: 155px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: #777;
+    padding: 32px 10px 18px;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #111;
+    text-align: left;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.nav-item span {
+    font-size: 19px;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: #ffffff40;
+}
+
+.settings {
+    margin-top: auto;
+}
+
+/* Main area */
+.content {
+    flex: 1;
+    min-width: 0;
+    padding: 22px 16px 30px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.categories, .sort-buttons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.category, .sort-buttons button {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border: none;
+    border-radius: 7px;
+    background: #d5d5d5;
+    font-size: 12px;
+}
+
+.category:hover, .category.active,
+.sort-buttons button:hover {
+    background: #bdbdbd;
+}
+
+/* Note cards in two columns */
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 14px 28px;
+}
+
+.note-card {
+    min-width: 0;
+    padding: 14px;
+    background: #d8d8d8;
+    overflow-wrap: anywhere;
+}
+
+.note-card h2 {
+    margin-bottom: 14px;
+    font-size: 16px;
+}
+
+.note-card p {
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.note-meta {
+    margin-top: 12px;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    color: #555;
+}
+
+.note-meta .work { color: #008b59; }
+.note-meta .personal { color: #8043ba; }
+.note-meta .family { color: #997400; }
+
+.note-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.note-actions button {
+    padding: 5px 8px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: #eee;
+    font-size: 11px;
+}
+
+.note-actions button:hover {
+    background: white;
+}
+
+#emptyMessage {
+    margin-top: 30px;
+    text-align: center;
+    color: #666;
+}
+
+/* Floating blue add button */
+.add-button {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: 50%;
+    background: #102eea;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    box-shadow: 0 3px 8px #0002;
+}
+
+.add-button:hover {
+    background: #0922c5;
+}
+
+/* Popup dialog */
+dialog {
+    width: min(420px, calc(100% - 32px));
+    margin: auto;
+    padding: 24px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 12px 45px #0003;
+}
+
+dialog::backdrop {
+    background: #0006;
+}
+
+dialog h2 {
+    margin-bottom: 20px;
+}
+
+#noteForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#noteForm input,
+#noteForm textarea,
+#noteForm select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#noteForm textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.dialog-actions button {
+    padding: 9px 12px;
+    border: none;
+    border-radius: 5px;
+}
+
+.save-button {
+    background: #102eea;
+    color: white;
+}
+
+/* Responsive layout */
+@media (max-width: 760px) {
+    .topbar {
+        height: auto;
+        min-height: 75px;
+        flex-wrap: wrap;
+        padding: 15px;
+    }
+
+    .search-box {
+        order: 3;
+        width: 100%;
+    }
+
+    .main-layout {
+        min-height: calc(100vh - 75px);
+    }
+
+    .sidebar {
+        width: 115px;
+        padding: 20px 6px;
+    }
+
+    .content {
+        padding: 16px 10px;
+    }
+
+    .toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .notes-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 420px) {
+    .sidebar {
+        width: 95px;
+    }
+
+    .nav-item {
+        gap: 5px;
+        padding: 9px 4px;
+        font-size: 11px;
+    }
+
+    .profile {
+        font-size: 12px;
+    }
+}

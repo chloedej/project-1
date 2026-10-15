@@ -113,7 +113,7 @@ function renderNotes() {
     notesGrid.innerHTML = "";
 
     // Create one card for every matching note
-    filteredNotes.forEach(function(note)) {
+    filteredNotes.forEach(function(note) {
         const card = document.createElement("article");
         card.className = "note-card";
 
@@ -136,4 +136,5 @@ function renderNotes() {
 
         meta.append(categoryLabel, dateLabel);
         card.append(title, description, meta);
-    
+    });
+

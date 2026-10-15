@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notes Dashboard</title>
+    <link rel="stylesheet" href="todo.css">
+    <script src="todo.js" defer></script>
+</head>
+<body>
+
+    <div class="app">
+            <!-- Top navigation bar -->
+        <header class="topbar">
+            </div>
+            <div class="search-box">
+                <span>⌕</span>
+                <input id="searchInput" type="text"
+                       placeholder="Search...">
+            </div>
+            <div class="profile">
+                <span>Chloe DeJarnette</span>
+                <div class="avatar">C</div>
+            </div>
+        </header>
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav>
+                    <button class="nav-item active" data-page="Notes">
+                        <span>▤</span> Notes
+                    </button>
+                    <button class="nav-item" data-page="Calendar">
+                        <span>▦</span> Calendar
+                    </button>
+                    <button class="nav-item" data-page="Archived">
+                        <span>▣</span> Archived
+                    </button>
+                    <button class="nav-item" data-page="Trash">
+                        <span>▤</span> Trash
+                    </button>
+                </nav>
+                <button class="nav-item settings" data-page="Settings">
+                    <span>⚙</span> Settings
+                </button>
+            </aside>
+            <!-- Main content -->
+            <main class="content">
+                <div class="toolbar">
+                    <div class="categories">
+                        <button class="category active" data-category="All">
+                            <span class="dot red"></span> All
+                        </button>
+                        <button class="category" data-category="Work">
+                            <span class="dot green"></span> Work
+                        </button>
+                        <button class="category" data-category="Personal">
+                            <span class="dot purple"></span>
+        <span class="dot purple"></span> Personal
+                        </button>
+                        <button class="category" data-category="Family">
+                            <span class="dot yellow"></span> Family
+                        </button>
+                    </div>
+
+
+                    <div class="sort-buttons">
+                        <button id="sortButton">↕ By Date</button>
+                        <button id="filterButton">☷ Filter</button>
+                    </div>
+                </div>
+
+
+                <div id="notesGrid" class="notes-grid"></div>
+
+
+                <p id="emptyMessage" hidden>No notes found.</p>
+
+
+            </main>
+        </div>
+
+        <!-- Floating add button -->
+        <button id="addNoteButton" class="add-button"
+                aria-label="Add a note">+</button>
+    </div>
+
+    <!-- New note dialog -->
+    <dialog id="noteDialog">
+        <form id="noteForm">
+            <h2 id="dialogTitle">Create a note</h2>
+
+            <label for="noteTitle">Title</label>
+            <input id="noteTitle" type="text"
+                   placeholder="Enter note title" required>
+
+            <label for="noteDescription">Description</label>
+            <textarea id="noteDescription"
+                      placeholder="Write your note..."
+                      required></textarea>
+
+            <label for="noteCategory">Category</label>
+            <select id="noteCategory">
+                <option>Work</option>
+                <option>Personal</option>
+                <option>Family</option>
+            </select>
+            <div class="dialog-actions">
+                <button type="button" id="cancelButton">Cancel</button>
+                <button type="submit" class="save-button">Save note</button>
+            </div>
+        </form>
+    </dialog>
+        <div class="main-layout">
+            
+</body>
+</html>

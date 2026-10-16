@@ -1,206 +1,423 @@
-const notes = [
+// ========================================
+// 1. TASK DATA
+// ========================================
+
+// All tasks live in an array of objects.
+// Each object represents one task.
+
+const tasks = [
     {
         id: 1,
         title: "Size Chart",
         description: "Media planning balances the strategic planning process. The questionnaire is more relevant than ever.",
         category: "Work",
-        date: new Date(),
-        archived: false,
-        trashed: false
+        completed: false
     },
     {
         id: 2,
         title: "Garden Plants",
-        description: "Media planning balances the strategic planning process. This questionnaire is more relevant than ever. The niche design ...",
+        description: "Plan the garden and decide which plants to buy this weekend.",
         category: "Personal",
-        date: new Date(),
-        archived: false,
-        trashed: false
+        completed: false
     },
     {
         id: 3,
         title: "Send a mail to PM",
-        description: "Marketing activity determines the media business. Based on the structure of Maslow's pyramid, the organization of marketing service attracts ...",
+        description: "Marketing activity determines the media business. Follow up with the project manager.",
         category: "Work",
-        date: new Date(),
-        archived: false,
-        trashed: false
+        completed: false
     },
     {
         id: 4,
         title: "Buy Harry Potter Book",
-        description: "Remember to purchase the next book on the reading list.",
-        category: "Family",
-        date: new Date(),
-        archived: false,
-        trashed: false
+        description: "Find the next book to add to the collection.",
+        category: "Personal",
+        completed: false
     },
     {
         id: 5,
         title: "Meet at the airport",
-        description: "Remember to leave early and check the flight details.",
+        description: "Remember to arrive on time for the meeting.",
         category: "Family",
-        date: new Date(),
-        archived: false,
-        trashed: false
-    },
-    {
-        id: 6,
-        title: "Meeting Point",
-        description: "Media planning balances the strategic planning process. The questionnaire is more relevant than ever. The niche design ...",
-        category: "Work",
-        date: new Date(),
-        archived: false,
-        trashed: false
+        completed: false
     }
 ];
 
-const notesGrid = document.getElementById("notesGrid");
-const searchInput = document.getElementById("searchInput");
+
+// ========================================
+// 2. GET HTML ELEMENTS
+// ========================================
+
+// These variables let JavaScript access our HTML.
+
+const taskList = document.getElementById("taskList");
+const taskForm = document.getElementById("taskForm");
+const taskTitle = document.getElementById("taskTitle");
+const taskDescription = document.getElementById("taskDescription");
+const taskCategory = document.getElementById("taskCategory");
+const taskError = document.getElementById("taskError");
+const taskSummary = document.getElementById("taskSummary");
 const emptyMessage = document.getElementById("emptyMessage");
 
-const addNoteButton = document.getElementById("addNoteButton");
-const noteDialog = document.getElementById("noteDialog");
-const noteForm = document.getElementById("noteForm");
-
-const noteTitle = document.getElementById("noteTitle");
-const noteDescription = document.getElementById("noteDescription");
-const noteCategory = document.getElementById("noteCategory");
-
+const addButton = document.getElementById("addButton");
 const cancelButton = document.getElementById("cancelButton");
-const sortButton = document.getElementById("sortButton");
-const filterButton = document.getElementById("filterButton");
+const searchInput = document.getElementById("searchInput");
+const sortSelect = document.getElementById("sortSelect");
 
-let selectedCategory = "All";
-let currentPage = "Notes";
-let newestFirst = true;
-let editingId = null;
 
-// Display notes on the page
-function renderNotes() {
-    const searchText = searchInput.value.toLowerCase();
-}
-    let filteredNotes = notes.filter(function(note) {
+// ========================================
+// 3. CURRENT FILTER
+// ========================================
+
+// "all" means show every task initially.
+
+let currentFilter = "all";
+
+
+// ========================================
+// 4. RENDER TASKS
+// ========================================
+
+// This function draws the task cards on the page.
+// It uses the data inside the tasks array.
+
+function renderTasks() {
+
+    // Start by clearing the old cards.
+    taskList.innerHTML = "";
+
+    // Get the text typed into the search box.
+    const searchText = searchInput.value
+        .trim()
+        .toLowerCase();
+
+    // FILTER: decide which tasks should be displayed.
+    const filteredTasks = tasks.filter(function(task) {
+
+        // Check whether the task matches the status filter.
+        const matchesFilter =
+            currentFilter === "all" ||
+            (currentFilter === "active" && !task.completed) ||
+            (currentFilter === "completed" && task.completed);
+
+        // Check whether the task matches the search.
         const matchesSearch =
-            note.title.toLowerCase().includes(searchText) ||
-            note.description.toLowerCase().includes(searchText);
+            task.title.toLowerCase().includes(searchText) ||
+            task.description.toLowerCase().includes(searchText);
 
-        const matchesCategory =
-            selectedCategory === "All" ||
-            note.category === selectedCategory;
-
-        let matchesPage = true;
-
-        if (currentPage === "Archived") {
-            matchesPage = note.archived && !note.trashed;
-        } else if (currentPage === "Trash") {
-            matchesPage = note.trashed;
-        } else {
-            matchesPage = !note.archived && !note.trashed;
-        }
-
-        return matchesSearch && matchesCategory && matchesPage;
+        // The task must match both conditions.
+        return matchesFilter && matchesSearch;
     });
 
-    // Sort notes by date
-    filteredNotes.sort(function(a, b) {
-        return newestFirst
-            ? b.date - a.date
-            : a.date - b.date;
-    });
+    // SORT: change the order if the user selects an option.
+    if (sortSelect.value === "title") {
+        filteredTasks.sort(function(a, b) {
+            return a.title.localeCompare(b.title);
+        });
+    }
 
-    // Clear the old cards before displaying new ones
-    notesGrid.innerHTML = "";
+    // Create a card for every matching task.
+    filteredTasks.forEach(function(task) {
 
-    // Create one card for every matching note
-    filteredNotes.forEach(function(note) {
+        // Create the main card.
         const card = document.createElement("article");
-        card.className = "note-card";
+        card.classList.add("task-card");
 
-        const title = document.createElement("h2");
-        title.textContent = note.title;
+        // Store the task's ID on the card.
+        card.dataset.id = task.id;
 
-        const description = document.createElement("p");
-        description.textContent = note.description;
-
-        const meta = document.createElement("div");
-        meta.className = "note-meta";
-
-        const categoryLabel = document.createElement("span");
-        categoryLabel.className = note.category.toLowerCase();
-        categoryLabel.textContent = note.category;
-
-        const dateLabel = document.createElement("span");
-        dateLabel.textContent =
-            " · " + note.date.toLocaleDateString();
-
-        meta.append(categoryLabel, dateLabel);
-        card.append(title, description, meta);
-    });
-        // Create the action buttons
-        const actions = document.createElement("div");
-        actions.className = "note-actions";
-
-        if (currentPage === "Trash") {
-            actions.append(
-                createActionButton("Restore", function() {
-                    note.trashed = false;
-                    renderNotes();
-                }),
-                createActionButton("Delete permanently", function() {
-                    const confirmed = confirm(
-                        "Permanently delete this note?"
-                    );
-
-                    if (confirmed) {
-                        const index = notes.findIndex(
-                            item => item.id === note.id
-                        );
-
-                        notes.splice(index, 1);
-                        renderNotes();
-                    }
-                })
-            );
-        } else if (currentPage === "Archived") {
-            actions.append(
-                createActionButton("Unarchive", function() {
-                    note.archived = false;
-                    renderNotes();
-                }),
-                createActionButton("Move to trash", function() {
-                    note.trashed = true;
-                    renderNotes();
-                })
-            );
-        } else {
-            actions.append(
-                createActionButton("Edit", function() {
-                    openEditDialog(note);
-                }),
-                createActionButton("Archive", function() {
-                    note.archived = true;
-                    renderNotes();
-                }),
-                createActionButton("Delete", function() {
-                    note.trashed = true;
-                    renderNotes();
-                })
-            );
+        // Visually mark completed tasks.
+        if (task.completed) {
+            card.classList.add("completed");
         }
 
-        card.appendChild(actions);
-        notesGrid.appendChild(card);
+        // Create the title.
+        const title = document.createElement("h2");
+        title.textContent = task.title;
 
-    emptyMessage.hidden = filteredNotes.length !== 0;
+        // Create the description.
+        const description = document.createElement("p");
+        description.textContent = task.description;
 
+        // Create the category label.
+        const category = document.createElement("div");
+        category.classList.add("task-meta");
+        category.textContent = "Category: " + task.category;
 
-// Helper function to create buttons
-function createActionButton(label, action) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = label;
-    button.addEventListener("click", action);
+        // Create the button container.
+        const actions = document.createElement("div");
+        actions.classList.add("task-actions");
 
-    return button;
+        // Create the complete button.
+        const completeButton = document.createElement("button");
+        completeButton.type = "button";
+        completeButton.classList.add("complete-btn");
+        completeButton.dataset.action = "complete";
+
+        completeButton.textContent = task.completed
+            ? "Undo Complete"
+            : "Mark Complete";
+
+        // Create the delete button.
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.dataset.action = "delete";
+        deleteButton.textContent = "Delete";
+
+        // Put the buttons inside their container.
+        actions.append(completeButton, deleteButton);
+
+        // Put everything inside the card.
+        card.append(title, description, category, actions);
+
+        // Add the card to the webpage.
+        taskList.appendChild(card);
+    });
+
+    // Show a message if no cards match.
+    emptyMessage.hidden = filteredTasks.length !== 0;
+
+    // Update the task summary.
+    updateSummary();
 }
+
+
+// ========================================
+// 5. COMPUTED TASK SUMMARY USING REDUCE
+// ========================================
+
+function updateSummary() {
+
+    // REDUCE: count the tasks that are not complete.
+    const tasksLeft = tasks.reduce(function(total, task) {
+
+        if (!task.completed) {
+            return total + 1;
+        }
+
+        return total;
+
+    }, 0);
+
+    // Count the completed tasks too.
+    const completedCount = tasks.reduce(function(total, task) {
+        return total + (task.completed ? 1 : 0);
+    }, 0);
+
+    // Display the results.
+    taskSummary.textContent =
+        tasksLeft + " tasks left • " +
+        completedCount + " completed • " +
+        tasks.length + " total";
+}
+
+
+// ========================================
+// 6. OPEN AND CLOSE THE ADD-TASK FORM
+// ========================================
+
+addButton.addEventListener("click", function() {
+
+    // Show or hide the form.
+    taskForm.hidden = !taskForm.hidden;
+
+    // Clear any old error message.
+    taskError.textContent = "";
+
+    // Focus the title field when opening.
+    if (!taskForm.hidden) {
+        taskTitle.focus();
+    }
+});
+
+cancelButton.addEventListener("click", function() {
+
+    taskForm.hidden = true;
+
+    taskForm.reset();
+
+    taskError.textContent = "";
+});
+
+
+// ========================================
+// 7. ADD A TASK WITH VALIDATION
+// ========================================
+
+taskForm.addEventListener("submit", function(event) {
+
+    // Stop the browser from refreshing the page.
+    event.preventDefault();
+
+    // Get the user's input and remove extra spaces.
+    const title = taskTitle.value.trim();
+    const description = taskDescription.value.trim();
+    const category = taskCategory.value;
+
+    // Do not allow an empty title.
+    if (title === "") {
+
+        taskError.textContent =
+            "Please enter a task title before adding a task.";
+
+        taskTitle.focus();
+
+        return;
+    }
+
+    // Generate a new ID.
+    const newId = tasks.length > 0
+        ? Math.max(...tasks.map(function(task) {
+            return task.id;
+        })) + 1
+        : 1;
+
+    // Create the new task object.
+    const newTask = {
+        id: newId,
+        title: title,
+        description: description || "No description provided.",
+        category: category,
+        completed: false
+    };
+
+    // Store the new object in the array.
+    tasks.push(newTask);
+
+    // Clear the form and error message.
+    taskForm.reset();
+    taskError.textContent = "";
+
+    // Close the form.
+    taskForm.hidden = true;
+
+    // Switch to All so the new task is visible.
+    currentFilter = "all";
+
+    document.querySelectorAll(".filter-btn").forEach(function(button) {
+        button.classList.toggle(
+            "selected",
+            button.dataset.filter === "all"
+        );
+    });
+
+    // Draw the updated list.
+    renderTasks();
+});
+
+
+// ========================================
+// 8. EVENT DELEGATION: COMPLETE OR DELETE
+// ========================================
+
+// One event listener handles all task buttons.
+// We do not need a separate listener for every card.
+
+taskList.addEventListener("click", function(event) {
+
+    // Find the button that was clicked.
+    const button = event.target.closest("button[data-action]");
+
+    // Stop if the click was not on a task button.
+    if (!button || !taskList.contains(button)) {
+        return;
+    }
+
+    // Find the card containing the button.
+    const card = button.closest(".task-card");
+
+    if (!card) {
+        return;
+    }
+
+    // Read the task ID stored on the card.
+    const taskId = Number(card.dataset.id);
+
+    // Find the matching task object in the array.
+    const task = tasks.find(function(item) {
+        return item.id === taskId;
+    });
+
+    if (!task) {
+        return;
+    }
+
+    // COMPLETE: toggle the task's completion status.
+    if (button.dataset.action === "complete") {
+
+        task.completed = !task.completed;
+
+        // Use classList.toggle to change the visual style.
+        card.classList.toggle("completed", task.completed);
+
+        // Redraw to update the button and current filter.
+        renderTasks();
+    }
+
+    // DELETE: remove the task from the array.
+    if (button.dataset.action === "delete") {
+
+        const taskIndex = tasks.findIndex(function(item) {
+            return item.id === taskId;
+        });
+
+        if (taskIndex !== -1) {
+            tasks.splice(taskIndex, 1);
+        }
+
+        // Redraw the list without the deleted task.
+        renderTasks();
+    }
+});
+
+
+// ========================================
+// 9. FILTER: ALL, ACTIVE, COMPLETED
+// ========================================
+
+document.querySelectorAll(".filter-btn").forEach(function(button) {
+
+    button.addEventListener("click", function() {
+
+        // Save the selected filter.
+        currentFilter = button.dataset.filter;
+
+        // Highlight the selected filter button.
+        document.querySelectorAll(".filter-btn").forEach(function(btn) {
+            btn.classList.toggle("selected", btn === button);
+        });
+
+        // Display the matching tasks.
+        renderTasks();
+    });
+});
+
+
+// ========================================
+// 10. SEARCH TASKS
+// ========================================
+
+searchInput.addEventListener("input", function() {
+
+    // Refresh the list as the user types.
+    renderTasks();
+});
+
+
+// ========================================
+// 11. SORT TASKS
+// ========================================
+
+sortSelect.addEventListener("change", function() {
+
+    renderTasks();
+});
+
+
+// ========================================
+// 12. INITIAL PAGE RENDER
+// ========================================
+
+// Run the function when JavaScript loads.
+
+renderTasks();
